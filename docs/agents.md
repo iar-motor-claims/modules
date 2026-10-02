@@ -39,17 +39,21 @@ exists.
 
 ## 3. MCP tools — external capabilities
 
-Repo-relevant MCP servers are checked in at [`.mcp.json`](../.mcp.json) (Claude Code
-reads it natively; other agents map these entries to their own config):
+MCP servers are checked in at [`.mcp.json`](../.mcp.json) (Claude Code reads it
+natively; other agents map these entries to their own config). The set is aligned
+with the org standard (`../claims/mcp.json`):
 
 | Server | Why it's here |
 |---|---|
-| **nx** | project graph, targets, generators — reason about the monorepo instead of guessing |
+| **linear** | read/update the Linear issues the work is tracked against |
+| **nx-mcp** | project graph, targets, generators — reason about the monorepo instead of guessing |
+| **shadcn** | browse/add shadcn UI components into bragi's React islands |
 | **playwright** | drive a real browser against the website — the behavioral/visual check |
-| **docs** (Context7) | current Astro/Tailwind/React docs — don't hallucinate APIs |
+| **code-review-graph** | knowledge graph — query code structure/impact before grepping (see "query before you grep") |
 
-Keep `.mcp.json` lean and repo-relevant. To add a server, justify it against a real
-task class here — not "might be handy."
+> Only the `mcpServers` key is read by Claude Code — a `servers` key is silently
+> ignored. Keep `.mcp.json` lean and repo-relevant; to add a server, justify it
+> against a real task class here — not "might be handy."
 
 ## 4. Verification loop — prove it works
 
@@ -77,6 +81,39 @@ hooks, production approval gate). Agent-specific boundaries:
   hook will reject non-conforming messages.
 - **Stay provider-neutral.** Agent guidance lives in `AGENTS.md`; don't scatter
   vendor-specific instructions into shared files.
+
+## Staying provider-agnostic (the substance/adapter rule)
+
+Rules have a cross-tool standard (`AGENTS.md`); permissions, hooks, skills, and
+subagents **do not** yet. So for those we keep the *substance* in a neutral home and
+make each tool's native file a thin adapter pointing at it:
+
+| Capability | Neutral home (substance) | Per-tool adapters |
+|---|---|---|
+| Rules / context | `AGENTS.md` + `docs/` | `CLAUDE.md`, `GEMINI.md`, `.cursor/rules/agents.mdc`, `.github/copilot-instructions.md` (symlinks); Codex reads `AGENTS.md` |
+| Guardrails / permissions | policy in `AGENTS.md` → *Guardrails for agents* | `.claude/settings.json`; Gemini `settings.json`; Codex sandbox/approval; Cursor allowlist |
+| Automation / hooks | `mise run <task>` + husky git hooks | `.claude/settings.json` hooks = optional in-session accelerator |
+| Skills / playbooks | `docs/playbooks/*.md`, `docs/add-a-service.md` | `.claude/skills/*` pointer files; Cursor commands; Codex prompts |
+| Subagents | documented roles in `docs/` (deferred) | `.claude/agents/*` |
+| MCP servers | `.mcp.json` | each MCP-aware tool maps the same entries |
+
+**Honest limits:** hard permission *enforcement*/sandboxing and in-session hooks are
+per-tool — only the *policy* and git-level automation are truly portable. That's why
+required automation lives in husky + mise, not a tool hook.
+
+### Guardrails across tools
+
+The policy is in `AGENTS.md` → *Guardrails for agents*. Enforcement mapping:
+
+| Rule | Claude (`.claude/settings.json`) | Other tools |
+|---|---|---|
+| Can't read secrets | `deny: Read(./.env*)`, `Read(./secrets/**)` | Gemini `excludeTools`/deny; Codex sandbox; Cursor ignore/allowlist |
+| Writes scoped to `services/**`,`docs/**` | `allow: Write/Edit(...)` | tool's write-scope / approval mode |
+| Ask before `git push`/`docker`/prod edits | `ask: Bash(git push:*)`, `Bash(docker:*)`, `…/production/**` | approval mode / confirm-on-command |
+| Keep code graph fresh | `PostToolUse` hook → `mise run graph-update` | husky `pre-push` runs it for everyone |
+
+To onboard a new tool's guardrails: translate the same four rows into that tool's
+config — don't rewrite the policy.
 
 ## Onboarding a new agent/tool
 

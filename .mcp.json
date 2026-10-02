@@ -1,25 +1,25 @@
 {
-  "$comment": "Provider-neutral MCP config for Modules. Claude Code reads this file natively; other agents map these entries to their own config. Aligned with the org standard set (see ../claims/mcp.json): linear + nx-mcp + shadcn, plus playwright for website verification. NOTE: Claude Code only reads the 'mcpServers' key — a 'servers' key is ignored.",
   "mcpServers": {
     "linear": {
-      "$comment": "Linear issues/projects — agents read and update the work items they're acting on.",
       "command": "pnpx",
       "args": ["-y", "mcp-remote", "https://mcp.linear.app/mcp"]
     },
     "nx-mcp": {
-      "$comment": "Project graph, targets, and generators for this nx monorepo so agents reason about the workspace instead of guessing.",
       "command": "npx",
       "args": ["nx-mcp@latest"]
     },
     "shadcn": {
-      "$comment": "shadcn component registry — browse/add UI components into bragi's React islands (Tailwind-based).",
       "command": "npx",
       "args": ["shadcn@latest", "mcp"]
     },
     "playwright": {
-      "$comment": "Drives a real browser against the website — the behavioral/visual verification loop for bragi.",
       "command": "npx",
       "args": ["-y", "@playwright/mcp@latest"]
+    },
+    "code-review-graph": {
+      "command": "uvx",
+      "args": ["code-review-graph", "serve"],
+      "type": "stdio"
     }
   }
 }

@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": ["Write(./services/**)", "Edit(./services/**)", "Write(./docs/**)", "Edit(./docs/**)", "WebFetch", "WebSearch"],
+    "deny": ["Read(./.env)", "Read(./.env.*)", "Read(./**/.env)", "Read(./**/.env.*)", "Read(./secrets/**)"],
+    "ask": ["Bash(git push:*)", "Bash(docker:*)", "Edit(./infra/services/*/production/**)", "Write(./infra/services/*/production/**)"],
+    "defaultMode": "default"
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [{ "type": "command", "command": "mise run graph-update", "timeout": 5000 }]
+      }
+    ]
+  }
+}

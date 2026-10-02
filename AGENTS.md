@@ -35,9 +35,10 @@ Full operating manual: **[docs/agents.md](./docs/agents.md)**. In short:
 - **Context:** this file + `services/<svc>/AGENTS.md` + `docs/` + `mise run info`.
 - **Tooling:** everything is a `mise run <task>`. The done-gate is **`mise run verify`**
   (lint + typecheck + build); behavioral checks run with **`mise run e2e`**.
-- **MCP:** repo-relevant servers are checked in at [`.mcp.json`](./.mcp.json) — `nx`
-  (project graph/targets), `playwright` (drive the website), `docs` (current
-  Astro/Tailwind/React docs). Provider-neutral; map them to any MCP-aware agent.
+- **MCP:** servers are checked in at [`.mcp.json`](./.mcp.json) — `linear` (issues),
+  `nx-mcp` (project graph/targets), `shadcn` (UI components), `playwright` (drive the
+  website), `code-review-graph` (query code structure before grepping). Aligned with
+  the org standard; provider-neutral, map to any MCP-aware agent.
 - **Verify before done:** `mise run verify [svc]` → `mise run e2e [svc]` → for UI,
   confirm render via the Playwright MCP.
 
@@ -56,6 +57,23 @@ Full operating manual: **[docs/agents.md](./docs/agents.md)**. In short:
    pipeline logic is duplicated here.
 5. **Version catalogs.** Dependencies use `catalog:` from `pnpm-workspace.yaml`.
 6. **Shared assets** live once in root `assets/`, referenced by services.
+
+## Work tracking (Linear)
+
+Work is tracked in Linear via the `linear` MCP. Before starting non-trivial work,
+ensure a Linear issue exists; set it `In Progress` when you start and `Done` when the
+PR merges. Use the branch name Linear returns and reference the issue id in the commit
+/ PR. Use `assignee: "me"` and the repo's default team — don't hardcode UUIDs or spend
+calls rediscovering them.
+
+## Code graph (query before you grep)
+
+If the `code-review-graph` MCP is connected, use it to **understand** code before
+reaching for Grep/Glob/Read: `semantic_search_nodes` / `query_graph` to find things,
+`get_impact_radius` for blast radius, `detect_changes` for review. It's faster and
+cheaper than file scanning. Fall back to file reads for the specific lines you edit.
+The graph is refreshed by `mise run graph-update` (run from husky `pre-push`), so it
+stays current for the next session regardless of which tool made the changes.
 
 ## Repo layout
 
@@ -113,6 +131,25 @@ and the production approval gate in `infra/jenkins/lib/config/environments.yaml`
 - Duplicate assets into a service — reference root `assets/`.
 - Add vendor-/model-specific instructions to shared files — keep guidance here,
   provider-neutral.
+
+## Guardrails for agents (all tools)
+
+This is the **provider-neutral safety policy.** Every tool enforces it in its own
+config — Claude via `.claude/settings.json`, others via their equivalent (see
+[docs/agents.md](./docs/agents.md#guardrails-across-tools)) — but the policy is the
+same everywhere:
+
+- **Never read, print, or commit secrets.** Don't open `.env` / `.env.*` or any
+  secrets store. `infra/services/*/*/envs.conf` declares which vars exist; values
+  come from the deploy environment (see [docs/env-configuration.md](./docs/env-configuration.md)).
+- **Never edit `infra/services/*/production/*` without explicit human approval** —
+  production is gated on purpose (`infra/jenkins/lib/config/environments.yaml`).
+- **Ask before irreversible/outward actions** — `git push`, `docker`, deploys.
+- **Writes default to `services/**` and `docs/**`.** Changing root config
+  (`.mise.toml`, `nx.json`, `Jenkinsfile`, catalogs) is higher-impact — flag it.
+- **Automation is tool-agnostic:** repeatable checks live in `mise run <task>` and
+  husky git hooks, which fire for every tool and human. Don't encode required
+  automation in a single tool's hook.
 
 ## Documentation map
 

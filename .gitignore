@@ -40,3 +40,6 @@ logs
 Thumbs.db
 
 # NOTE: pnpm-lock.yaml IS committed (required for --frozen-lockfile + Docker builds)
+
+# Agent tooling (personal overrides — not shared)
+.claude/settings.local.json

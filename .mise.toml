@@ -168,6 +168,23 @@ run = '''
 '''
 dir = "{{config_root}}"
 
+[tasks.graph-update]
+description = "Refresh the code-review-graph knowledge graph (no-op if the tool isn't installed)"
+run = '''
+#!/bin/bash
+# Provider-neutral entry point for keeping the code graph fresh. Any tool, human,
+# or CI calls the SAME command — not a Claude-only hook. Tolerant by design so a
+# machine without code-review-graph installed still commits/pushes cleanly.
+if command -v code-review-graph >/dev/null 2>&1; then
+  code-review-graph update || true
+elif command -v uvx >/dev/null 2>&1; then
+  uvx code-review-graph update || true
+else
+  echo "note: code-review-graph not installed — skipping graph update"
+fi
+'''
+dir = "{{config_root}}"
+
 [tasks.list-services]
 description = "List services in the monorepo"
 run = '''
