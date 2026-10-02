@@ -41,11 +41,31 @@ printf "\n${DIM}Services are named after Norse figures (see NAMING.md). First se
 dir = "{{config_root}}"
 
 [tasks.setup]
-description = "Install all dependencies"
+description = "Install all dependencies + wire git hooks"
 run = '''
     set -e
+
+    BOLD="\033[1m"; RESET="\033[0m"; GREEN="\033[32m"; CYAN="\033[36m"; YELLOW="\033[33m"; DIM="\033[2m"
+    TICK="${GREEN}✓${RESET}"; ARROW="${CYAN}→${RESET}"
+
+    printf "\n${BOLD}Setting up Modules Platform...${RESET}\n\n"
+
+    printf "${ARROW} ${CYAN}[1/2]${RESET} Installing Node dependencies\n"
     pnpm install --frozen-lockfile 2>&1 | tail -3 || pnpm install 2>&1 | tail -3
-    printf "\n\033[32m✓ Setup complete.\033[0m Run: \033[33mmise run dev bragi\033[0m\n\n"
+    printf "  ${TICK} Node dependencies ready\n\n"
+
+    printf "${ARROW} ${CYAN}[2/2]${RESET} Wiring git hooks (husky)\n"
+    pnpm exec husky 2>/dev/null || npx --no -- husky 2>/dev/null || true
+    if [ -x .husky/pre-commit ]; then
+      printf "  ${TICK} git hooks active (pre-commit, commit-msg, pre-push)\n\n"
+    else
+      printf "  ${YELLOW}! hooks not wired — check .husky/${RESET}\n\n"
+    fi
+
+    printf "${GREEN}${BOLD}✓ Setup complete!${RESET}\n\n"
+    printf "${DIM}Next steps:${RESET}\n"
+    printf "  ${YELLOW}mise run dev${RESET}       ${DIM}start all services${RESET}\n"
+    printf "  ${YELLOW}mise run info${RESET}      ${DIM}see all tasks${RESET}\n\n"
 '''
 dir = "{{config_root}}"
 

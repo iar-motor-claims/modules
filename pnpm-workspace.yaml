@@ -3,6 +3,12 @@ packages:
   - "packages/*"
   - "tools/*"
 
+# Allow these dependencies to run build scripts (pnpm 10+ blocks them by default).
+onlyBuiltDependencies:
+  - esbuild
+  - nx
+  - sharp
+
 catalogs:
   # ============================================================================
   # Default Catalog - Shared across all packages (accessed via catalog:)

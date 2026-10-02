@@ -28,6 +28,19 @@ machine-specific knowledge to build, test, or run anything.
 4. **Mirror existing patterns.** New services copy the layout of `services/bragi/`.
    Don't invent new top-level structures.
 
+## Agent enablement (context, tooling, MCP, verification)
+
+Full operating manual: **[docs/agents.md](./docs/agents.md)**. In short:
+
+- **Context:** this file + `services/<svc>/AGENTS.md` + `docs/` + `mise run info`.
+- **Tooling:** everything is a `mise run <task>`. The done-gate is **`mise run verify`**
+  (lint + typecheck + build); behavioral checks run with **`mise run e2e`**.
+- **MCP:** repo-relevant servers are checked in at [`.mcp.json`](./.mcp.json) — `nx`
+  (project graph/targets), `playwright` (drive the website), `docs` (current
+  Astro/Tailwind/React docs). Provider-neutral; map them to any MCP-aware agent.
+- **Verify before done:** `mise run verify [svc]` → `mise run e2e [svc]` → for UI,
+  confirm render via the Playwright MCP.
+
 ## Non-negotiable conventions
 
 1. **mise is the primary tooling.** Run `mise run <task>`, not raw `pnpm`/`nx`.
@@ -104,6 +117,7 @@ and the production approval gate in `infra/jenkins/lib/config/environments.yaml`
 ## Documentation map
 
 - [README.md](./README.md) — what the repo is, owners, services table
+- [docs/agents.md](./docs/agents.md) — agent enablement: context, tooling, MCP, verify loop
 - [docs/conventions.md](./docs/conventions.md) — naming, mise-first, catalogs
 - [docs/architecture.md](./docs/architecture.md) — layout, service anatomy
 - [docs/guardrails.md](./docs/guardrails.md) — CI/CD, CODEOWNERS, hooks, gates

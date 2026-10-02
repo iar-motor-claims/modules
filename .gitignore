@@ -1,66 +1,42 @@
 # Dependencies
 node_modules
-/.pnp
-.pnp.js
-pnpm-lock.yaml
+
+# Build output
+dist
+build
+.astro
+.next
+out
+
+# Nx
+.nx
+.nx/cache
 
 # Testing
 coverage
 .nyc_output
+test-results
+playwright-report
 
-# Production
-dist
-build
-.next
-out
-
-# Misc
-.DS_Store
-*.pem
+# Env
 .env
 .env.local
 .env.*.local
 
 # Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+*-debug.log*
+logs
 
 # IDE
 .vscode
 .idea
 *.swp
 *.swo
-*.iml
-.eslintcache
 
-# Nx
-.nx
-.nx/cache
-
-# Python
-__pycache__
-*.py[cod]
-*$py.class
-.venv
-env/
-venv/
-.pytest_cache
-.mypy_cache
-
-# macOS
+# OS
 .DS_Store
 .AppleDouble
 .LSOverride
-
-# OS
 Thumbs.db
-.env.*.local
-.env.local
 
-# Cache
-.turbo
-.next/cache
-.nx/cache
+# NOTE: pnpm-lock.yaml IS committed (required for --frozen-lockfile + Docker builds)
