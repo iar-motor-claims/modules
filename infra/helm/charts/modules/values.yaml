@@ -1,0 +1,102 @@
+# Modules Helm Chart Values
+
+# Global configuration
+global:
+  environment: development
+  domain: modules.local
+  timezone: UTC
+
+# Image configuration
+image:
+  registry: gcr.io/your-project
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: modules.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# Pod security policy
+podSecurityPolicy:
+  enabled: false
+
+# Network policies
+networkPolicy:
+  enabled: false
+
+# Resource limits (per service)
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+# Replicas for services
+replicaCount: 1
+
+# Node affinity
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+# Health checks
+healthChecks:
+  enabled: true
+  livenessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readinessProbe:
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+# Autoscaling
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+# Storage
+persistence:
+  enabled: false
+  storageClassName: standard
+  accessMode: ReadWriteOnce
+  size: 10Gi
+  mountPath: /data
+
+# Environment variables
+env: {}
+  # Example:
+  # LOG_LEVEL: info
+  # DEBUG: "false"
+
+# Secrets
+secrets: {}
+  # Example:
+  # DATABASE_URL: /path/to/secret
+
+# ConfigMaps
+configMaps: {}
+  # Example:
+  # config.json: |
+  #   {"key": "value"}

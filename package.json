@@ -1,0 +1,35 @@
+{
+  "name": "modules",
+  "version": "1.0.0",
+  "description": "Modular product platform - selling everything as modules",
+  "private": true,
+  "packageManager": "pnpm@10.32.1",
+  "type": "module",
+  "scripts": {
+    "nx": "nx",
+    "build": "nx run-many --target=build --all",
+    "lint": "nx run-many --target=lint --all",
+    "typecheck": "nx run-many --target=typecheck --all",
+    "test": "nx run-many --target=test --all",
+    "test:watch": "nx run-many --target=test:watch --all --skip-nx-cache",
+    "clean": "nx reset",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@nx/eslint": "^19.8.0",
+    "@nx/eslint-plugin": "^19.8.0",
+    "@nx/js": "^19.8.0",
+    "@nx/linter": "^19.8.0",
+    "@nx/vite": "^19.8.0",
+    "@nx/webpack": "^19.8.0",
+    "@nx/workspace": "^19.8.0",
+    "nx": "^19.8.0",
+    "prettier": "^3.6.2",
+    "typescript": "5.9.2"
+  },
+  "engines": {
+    "node": ">=22.15.3",
+    "pnpm": ">=10.32.1"
+  }
+}

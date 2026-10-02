@@ -1,0 +1,19 @@
+apiVersion: v2
+name: modules
+description: Helm chart for Modules Platform monorepo services
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+
+keywords:
+  - modules
+  - microservices
+  - monorepo
+
+home: https://github.com/your-org/modules
+sources:
+  - https://github.com/your-org/modules
+
+maintainers:
+  - name: Otaku Tekkurai
+    email: admin@iarservices.in

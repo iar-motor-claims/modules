@@ -1,0 +1,115 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "extends": "nx/presets/npm.json",
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": [
+          "build",
+          "lint",
+          "typecheck",
+          "test",
+          "test:watch"
+        ],
+        "parallel": 5
+      }
+    }
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "{projectRoot}/**/*",
+        "{workspaceRoot}/.env*",
+        "!{projectRoot}/.next/cache/**"
+      ],
+      "outputs": [
+        "{projectRoot}/dist",
+        "{projectRoot}/.next",
+        "{projectRoot}/build"
+      ],
+      "cache": true
+    },
+    "docker:build": {
+      "dependsOn": ["^docker:build"],
+      "cache": true
+    },
+    "lint": {
+      "dependsOn": ["^lint"],
+      "cache": true
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "cache": true
+    },
+    "dev": {
+      "cache": false,
+      "continuous": true
+    },
+    "start": {
+      "cache": false,
+      "continuous": true,
+      "dependsOn": ["build"]
+    }
+  },
+  "workspaceLayout": {
+    "appsDir": "services",
+    "libsDir": "packages"
+  },
+  "defaultBase": "main",
+  "daemon": true,
+  "useDaemonProcess": true,
+  "plugins": [
+    {
+      "plugin": "@nx/docker",
+      "options": {
+        "buildTarget": {
+          "name": "docker:build"
+        },
+        "runTarget": {
+          "name": "docker:run"
+        }
+      }
+    }
+  ],
+  "release": {
+    "releaseTagPattern": "{projectName}@{version}",
+    "version": {
+      "conventionalCommits": true,
+      "generatorOptions": {
+        "packageRoot": "dist/packages/{projectName}",
+        "currentVersionResolver": "git-tag",
+        "fallbackCurrentVersionResolver": "disk"
+      }
+    },
+    "groups": {
+      "default": {
+        "projects": ["@modules/*"],
+        "projectsRelationship": "independent"
+      }
+    },
+    "changelog": {
+      "workspaceChangelog": false,
+      "projectChangelogs": {
+        "createRelease": "github",
+        "file": "{projectRoot}/CHANGELOG.md",
+        "entryWhenNoChanges": "This release contains no new changes.",
+        "renderOptions": {
+          "authors": true,
+          "commitReferences": true,
+          "versionTitleDate": true
+        }
+      }
+    },
+    "git": {
+      "commit": true,
+      "tag": true,
+      "commitMessage": "chore(release): publish {version} [skip ci]"
+    }
+  },
+  "tui": {
+    "autoExit": true
+  },
+  "analytics": false
+}
