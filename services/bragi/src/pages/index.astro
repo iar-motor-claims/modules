@@ -3,12 +3,15 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
 <BaseLayout>
-  <header class="border-b border-slate-200">
+  <header class="border-b border-navy-100">
     <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-      <span class="text-xl font-bold">Modules</span>
+      <a href="/" class="flex items-center gap-3">
+        <img src="/brand/logo.svg" alt="IAR" class="h-9 w-auto" />
+        <span class="text-xl font-bold text-navy-900">Modules</span>
+      </a>
       <a
         href="https://github.com/iar-motor-claims/modules"
-        class="text-sm font-medium text-slate-600 hover:text-slate-900"
+        class="text-sm font-medium text-navy-600 hover:text-navy-900"
       >
         GitHub
       </a>
@@ -17,18 +20,32 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
   <main class="mx-auto max-w-6xl px-6">
     <section class="py-24 text-center">
-      <h1 class="text-5xl font-bold tracking-tight sm:text-6xl">
+      <h1 class="text-5xl font-bold tracking-tight text-navy-950 sm:text-6xl">
         Composable modules for AI &amp; business
       </h1>
-      <p class="mx-auto mt-6 max-w-2xl text-lg text-slate-600">
+      <p class="mx-auto mt-6 max-w-2xl text-lg text-navy-600">
         Buy what you need. Each capability ships as an independent, deployable
         module you can license on its own or bundle together.
       </p>
+      <div class="mt-10 flex items-center justify-center gap-4">
+        <a
+          href="#modules"
+          class="rounded-lg bg-amber-500 px-6 py-3 font-semibold text-navy-950 transition hover:bg-amber-600"
+        >
+          Explore modules
+        </a>
+        <a
+          href="https://github.com/iar-motor-claims/modules"
+          class="rounded-lg border border-navy-200 px-6 py-3 font-semibold text-navy-700 transition hover:border-navy-400"
+        >
+          View on GitHub
+        </a>
+      </div>
     </section>
   </main>
 
-  <footer class="border-t border-slate-200">
-    <div class="mx-auto max-w-6xl px-6 py-8 text-sm text-slate-500">
+  <footer class="border-t border-navy-100">
+    <div class="mx-auto max-w-6xl px-6 py-8 text-sm text-navy-500">
       © 2025 IAR Services. All rights reserved.
     </div>
   </footer>

@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
-:root {
-  --brand: #0b63f6;
+/* IAR Services brand palette (see claims/webapp BRAND_DESIGN_SYSTEM.md).
+   Navy = authority/trust · Teal = technology · Amber = action/CTA. */
+@theme {
+  --color-navy-950: #0a1628;
+  --color-navy-900: #0f2140;
+  --color-navy-800: #162d54;
+  --color-navy-700: #1e3a5f;
+  --color-navy-600: #2b4f7e;
+  --color-navy-500: #3d6b9e;
+
+  --color-teal-700: #0e7c6b;
+  --color-teal-600: #0d9488;
+  --color-teal-500: #14b8a6;
+  --color-teal-400: #2dd4bf;
+
+  --color-amber-600: #d97706;
+  --color-amber-500: #f59e0b;
+  --color-amber-400: #fbbf24;
 }
