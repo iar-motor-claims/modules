@@ -1,6 +1,18 @@
-# Modules Platform — Marketing Website
+# Modules Platform
 
-Marketing website for Modules, a modular product platform. Built with **Astro**, integrated into **monorepo_nx_pipeline**.
+**Modules** is a comprehensive product platform providing **composable, sellable AI and business modules** that can be integrated into any application.
+
+## What is Modules?
+
+A modular product ecosystem containing:
+
+- **AI Modules** — LLM, document processing, agentic AI capabilities
+- **Claims Module** — Insurance/claims management system
+- **Document Processing** — OCR, extraction, analysis
+- **Agentic AI** — Autonomous agent frameworks
+- **More Modules** — Built and added as needed
+
+Each module is independently deployable, versioned, and can be sold/licensed separately or as a bundle.
 
 ## Quick Start
 
@@ -8,6 +20,7 @@ Marketing website for Modules, a modular product platform. Built with **Astro**,
 
 - **Node.js:** 22.15.3 or higher
 - **pnpm:** 10.32.1 or higher
+- **mise:** Optional but recommended for task automation
 
 ### Installation
 
@@ -18,116 +31,165 @@ pnpm install
 
 ### Development
 
+Using **mise** (recommended):
+
 ```bash
-# Start development server (localhost:3000)
-pnpm dev
+mise run dev          # Start development server
+mise run build        # Build all modules
+mise run lint         # Lint all code
+mise run typecheck    # Type check
+mise run test         # Run all tests
+```
 
-# Build for production
-pnpm build
+Or using **pnpm**:
 
-# Preview production build
-pnpm preview
-
-# Lint code
-pnpm lint
-
-# Type check
-pnpm typecheck
-
-# Run tests
-pnpm test
-
-# E2E tests
-pnpm test:e2e
+```bash
+pnpm dev              # Start dev server
+pnpm build            # Build
+pnpm lint             # Lint
+pnpm typecheck        # Type check
+pnpm test             # Tests
 ```
 
 ## Project Structure
 
 ```
 modules/
-├── src/
-│   ├── pages/              # Astro pages (URL routes)
-│   ├── components/         # React components
-│   ├── layouts/            # Page layouts
-│   └── styles/             # Global CSS
-├── public/                 # Static assets
-├── tests/                  # E2E tests (Playwright)
-├── Dockerfile              # Docker image for deployment
-├── astro.config.mjs        # Astro configuration
-├── package.json            # Dependencies and scripts
-└── tsconfig.json           # TypeScript configuration
+├── modules/                           # Core product modules
+│   ├── ai/                           # AI module (LLM, agents)
+│   ├── claims/                       # Claims management module
+│   ├── document-processing/          # Document processing module
+│   ├── agentic-ai/                   # Agentic AI framework
+│   └── [other-modules]/
+│
+├── packages/                         # Shared libraries
+│   ├── types/                        # Shared TypeScript types
+│   ├── utils/                        # Shared utilities
+│   ├── api-client/                   # API client SDK
+│   └── [shared-libs]/
+│
+├── docs/                             # Documentation & marketing site
+│   ├── pages/                        # Astro pages
+│   ├── components/                   # React components
+│   ├── styles/                       # Styling
+│   └── [site-structure]/
+│
+├── infra/                            # Infrastructure configs
+│   └── services/                     # Service deployment configs
+│
+├── .mise.toml                        # Development task automation
+├── package.json                      # Root workspace
+└── pnpm-workspace.yaml               # pnpm workspaces config
 ```
+
+## Modules Overview
+
+### AI Module (`modules/ai/`)
+- Large Language Model integration
+- Prompt engineering & optimization
+- Token management & cost tracking
+- Multi-model support
+
+### Claims Module (`modules/claims/`)
+- Claims processing engine
+- Policy validation
+- Settlement calculation
+- Document verification
+
+### Document Processing (`modules/document-processing/`)
+- OCR capabilities
+- Text extraction
+- Document classification
+- Field extraction
+
+### Agentic AI (`modules/agentic-ai/`)
+- Agent framework & orchestration
+- Task decomposition
+- Multi-agent coordination
+- Tool integration
+
+## Shared Packages
+
+**types/** — TypeScript definitions used across all modules  
+**utils/** — Common utilities (formatting, validation, etc.)  
+**api-client/** — SDK for consuming modules via API  
+
+## Documentation & Marketing Site
+
+**Location:** `docs/` folder (Astro + React)
+
+Built-in documentation includes:
+- Module overview & features
+- API reference & examples
+- Integration guides
+- Pricing & licensing
+- Contact & support
+
+Access at: `https://modules.iarservices.in`
 
 ## CI/CD Integration
 
-**Pipeline:** `monorepo_nx_pipeline` (shared with other services)  
-**Service Name:** `modules-website`  
-**Kind:** `frontend`  
-**Language:** `node`  
+**Pipeline:** `monorepo_nx_pipeline` (shared with other services)
 
-### Deployment
+### Multi-Service Build
 
-1. **Build:** `pnpm build` → static site in `/dist`
-2. **Docker:** Multi-stage build → Nginx image
-3. **Deploy:** Kubernetes via Helm OR Cloudflare Pages
+The pipeline handles:
+- Detecting changed modules
+- Building only affected modules in parallel
+- Running tests per module
+- Publishing module releases
+- Deploying to staging/production
 
 ### Environment Configuration
 
 ```bash
-infra/services/modules-website/
-├── development/
-│   └── envs.conf         # Development env vars
-└── production/
-    └── envs.conf         # Production env vars
+infra/services/
+├── modules-ai/
+│   ├── development/envs.conf
+│   └── production/envs.conf
+├── modules-claims/
+│   ├── development/envs.conf
+│   └── production/envs.conf
+└── [other-modules]/
 ```
 
-## Architecture
+## Publishing Modules
 
-- **Framework:** Astro 6.0 (static site generator)
-- **Styling:** Tailwind CSS 4
-- **Runtime:** React 19 (islands)
-- **Deployment:** Docker + Nginx
-- **Hosting:** Kubernetes (GKE) or Cloudflare Pages
-
-## Features
-
-✅ Fast static site generation  
-✅ React components for interactivity  
-✅ Tailwind CSS for styling  
-✅ TypeScript for type safety  
-✅ E2E tests with Playwright  
-✅ Production-optimized Nginx config  
-✅ Health checks built-in  
+Each module can be:
+- **Published to npm** as a package (e.g., `@modules/ai`)
+- **Deployed as a service** (Docker + Kubernetes)
+- **Used as a library** in other applications
+- **Sold/licensed** independently
 
 ## Best Practices
 
-1. **Pages:** Create Astro files in `src/pages/` for new routes
-2. **Components:** React components in `src/components/`
-3. **Styling:** Use Tailwind CSS classes or `src/styles/global.css`
-4. **Assets:** Reference shared assets from root `assets/` directory
-5. **Testing:** Add E2E tests in `tests/` for critical flows
+1. **Module independence** — Each module is self-contained
+2. **Shared types** — Use `packages/types/` for cross-module types
+3. **Versioning** — Modules are versioned independently
+4. **Documentation** — Every module has API docs & examples
+5. **Testing** — All modules have unit + E2E tests
+6. **No circular dependencies** — Modules depend on packages, not each other
 
-## Docker Build & Run
+## Architecture Benefits
 
-```bash
-# Build image
-docker build -t modules-website:latest .
-
-# Run container
-docker run -p 80:8080 modules-website:latest
-
-# Access at http://localhost
-```
+✅ **Modular** — Each capability is independent  
+✅ **Composable** — Mix & match modules as needed  
+✅ **Sellable** — License modules individually or as bundles  
+✅ **Scalable** — Deploy/scale each module independently  
+✅ **Maintainable** — Clear separation of concerns  
+✅ **Tested** — Comprehensive test coverage per module  
+✅ **Documented** — Built-in documentation site  
 
 ## Resources
 
-- [Astro Documentation](https://docs.astro.build)
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [React Documentation](https://react.dev)
-- [Playwright Documentation](https://playwright.dev)
+- **Astro Docs:** https://docs.astro.build
+- **pnpm Docs:** https://pnpm.io
+- **TypeScript Docs:** https://www.typescriptlang.org/docs
+- **Jenkins Pipeline:** https://jenkins.iarservices.in
+- **GitHub:** https://github.com/iar-motor-claims/modules
 
 ## Related
 
-- **GitHub:** https://github.com/iar-motor-claims/modules
-- **Jenkins:** https://jenkins.iarservices.in → modules-website service
-- **Portal:** https://modules.iarservices.in
+- **Documentation Site:** https://modules.iarservices.in
+- **GitHub Organization:** https://github.com/iar-motor-claims
+- **Jenkins Instance:** https://jenkins.iarservices.in
