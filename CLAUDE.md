@@ -13,11 +13,13 @@ with any setup as long as you go through **mise**.
    Tasks pin tool versions and env so everyone (and CI) stays aligned.
    Start with `mise run info`.
 2. **Services are Norse-named.** Every `services/<name>/` uses a Norse codename
-   (see [NAMING.md](./NAMING.md)). No generic names. Package = `@modules/<name>`.
+   (see [docs/conventions.md](./docs/conventions.md#naming)). No generic names.
+   Package = `@modules/<name>`.
 3. **Follow the monorepo pattern.** New services mirror the existing service's
    layout (see `services/bragi/`). Don't invent new top-level structures.
-4. **CI/CD is the shared `monorepo_nx_pipeline`.** No per-repo Jenkinsfile.
-   Each service registers in the pipeline's catalog.
+4. **CI/CD is the shared `monorepo_nx_pipeline`.** The root `Jenkinsfile` is thin —
+   it only declares the service catalog and delegates to the shared library. No
+   pipeline logic is duplicated here.
 5. **Version catalogs.** Dependencies use `catalog:` from `pnpm-workspace.yaml`.
 6. **Shared assets** live once in root `assets/`, referenced by services.
 
@@ -56,27 +58,34 @@ mise run typecheck bragi
 
 ## Adding a new service
 
-1. Pick a Norse codename (NAMING.md) — add it to the table there.
-2. Create `services/<codename>/` mirroring `services/bragi/`:
-   - `package.json` → name `@modules/<codename>`, scripts (dev/build/lint/typecheck)
-   - `project.json` → Nx targets + tags (`type:app`, `scope:services`, `framework:…`)
-   - framework config, `Dockerfile`, `nginx.conf` (for web services)
-   - `README.md` with the codename + role + why
-3. `infra/services/<codename>/{development,production}/envs.conf`
-4. Register `<codename>` in the `monorepo_nx_pipeline` catalog.
-5. `mise run setup` then `mise run dev <codename>`.
+Follow [docs/add-a-service.md](./docs/add-a-service.md) — the full playbook. In short:
+pick a Norse codename → scaffold `services/<codename>/` like `bragi` → add
+`infra/services/<codename>/{development,production}/{envs.conf,values.yaml}` →
+register it in the root `Jenkinsfile` catalog → `mise run dev <codename>`.
+
+## Guardrails
+
+See [docs/guardrails.md](./docs/guardrails.md): CODEOWNERS, conventional-commit
+enforcement, husky hooks (`pre-commit`/`commit-msg`/`pre-push`), version catalogs,
+and the production approval gate in `infra/jenkins/lib/config/environments.yaml`.
 
 ## Never
 
 - Call raw `pnpm`/`nx` in docs/scripts when a `mise run` task exists.
 - Create a service with a non-Norse / generic name.
-- Add a separate Jenkinsfile — use `monorepo_nx_pipeline`.
+- Put pipeline logic in the Jenkinsfile — it only declares the catalog.
 - Hardcode versions — use `catalog:`.
 - Duplicate assets into a service — reference root `assets/`.
 
+## Documentation map
+
+- [README.md](./README.md) — what the repo is, owners, services table
+- [docs/conventions.md](./docs/conventions.md) — naming, mise-first, catalogs
+- [docs/architecture.md](./docs/architecture.md) — layout, service anatomy
+- [docs/guardrails.md](./docs/guardrails.md) — CI/CD, CODEOWNERS, hooks, gates
+- [docs/add-a-service.md](./docs/add-a-service.md) — add-a-service playbook
+- `services/<name>/README.md` — per-service docs
+
 ## Resources
 
-- Astro: https://docs.astro.build
-- Tailwind: https://tailwindcss.com/docs
-- mise: https://mise.jdx.dev
-- NAMING.md — the Norse naming convention
+- Astro: https://docs.astro.build · Tailwind: https://tailwindcss.com/docs · mise: https://mise.jdx.dev

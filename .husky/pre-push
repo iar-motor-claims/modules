@@ -1,0 +1,3 @@
+#!/bin/sh
+# Pre-push guardrail: every affected service must build before push
+nx affected -t build

@@ -1,0 +1,49 @@
+# ==============================================================================
+# Environment matrix & approval gates for the Modules product.
+# Consumed by the shared monorepo_nx_pipeline (same schema as iar-claims).
+# ==============================================================================
+
+products:
+  modules:
+    displayName: "Modules Platform"
+
+    environments:
+      development:
+        gcpProject: "iar-development"
+        namespace: "development"
+        requireApproval: false # auto-deploy, no gate
+        enableSecurityScans: true
+        vulnerabilitySeverity: "MEDIUM"
+        slackChannel: "#modules-dev-deployments"
+        notifyOnSuccess: false
+        notifyOnFailure: true
+
+      staging:
+        gcpProject: "iar-development"
+        namespace: "staging"
+        requireApproval: false # auto-deploy
+        enableSecurityScans: true
+        vulnerabilitySeverity: "HIGH"
+        slackChannel: "#modules-deployments"
+        notifyOnSuccess: true
+        notifyOnFailure: true
+        generateReleaseNotes: true
+
+      production:
+        gcpProject: "iar-production"
+        namespace: "production"
+        requireApproval: true # 🔒 approval gate
+        approvers: "claims-lead,release-manager"
+        approvalTimeout: "2h"
+        enableSecurityScans: true
+        vulnerabilitySeverity: "CRITICAL"
+        slackChannel: "#modules-deployments"
+        notifyOnSuccess: true
+        notifyOnFailure: true
+        generateReleaseNotes: true
+        releaseNotesDraft: false
+
+aliases:
+  dev: "development"
+  uat: "staging"
+  prod: "production"

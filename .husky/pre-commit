@@ -1,0 +1,18 @@
+#!/bin/sh
+# Pre-commit guardrail: keep mise.lock in sync, then typecheck/format/lint/build
+# only what's affected. mise is the primary tooling — hooks go through it.
+
+# If .mise.toml changed, refresh the lockfile and stage it
+MISE_CHANGED=$(git diff --cached --name-only --diff-filter=ACM | grep '^\.mise\.toml$' || true)
+if [ -n "$MISE_CHANGED" ]; then
+  echo "🔧 .mise.toml changed — running mise install && mise lock..."
+  mise install
+  mise lock
+  git add mise.lock
+  echo "✅ mise.lock updated and staged"
+fi
+
+# Affected-only checks (fast; skips unchanged services)
+nx affected -t typecheck
+nx affected -t lint
+nx affected -t build

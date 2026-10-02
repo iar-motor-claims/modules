@@ -1,0 +1,49 @@
+name: bragi
+namespace: development
+component: frontend
+tier: public
+
+image:
+  repository: asia-docker.pkg.dev/iar-motor-claims/bragi
+  tag: latest
+
+containerPort: 80
+nginxWritableDirs: true
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 250m
+    memory: 256Mi
+
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 1
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+
+startupProbe:
+  httpGet:
+    path: /
+    port: 80
+livenessProbe:
+  httpGet:
+    path: /
+    port: 80
+readinessProbe:
+  httpGet:
+    path: /
+    port: 80
+
+httproute:
+  gatewayName: development-iarservices-gateway
+  hostnames:
+    - "modules-dev.iarservices.in"

@@ -1,0 +1,43 @@
+# ==============================================================================
+# CODEOWNERS - Automatic Reviewer Assignment
+# ==============================================================================
+#
+# Owner: ZOOP Claims Team
+#
+# Teams
+# - @iar-motor-claims/leads      - Leadership (infra, CI/CD, root config)
+# - @iar-motor-claims/developer  - Application / service development
+#
+# Rules: later entries override earlier ones
+# ==============================================================================
+
+# Default — everything not matched below
+* @iar-motor-claims/developer
+
+# ------------------------------------------------------------------------------
+# CI/CD & GitHub
+# ------------------------------------------------------------------------------
+/.github/ @iar-motor-claims/leads
+
+# ------------------------------------------------------------------------------
+# Infrastructure & deployment config
+# ------------------------------------------------------------------------------
+/infra/ @iar-motor-claims/leads
+
+# ------------------------------------------------------------------------------
+# Root configuration (toolchain, workspace, conventions)
+# ------------------------------------------------------------------------------
+/nx.json @iar-motor-claims/leads
+/package.json @iar-motor-claims/leads
+/pnpm-workspace.yaml @iar-motor-claims/leads
+/.mise.toml @iar-motor-claims/leads
+/mise.lock @iar-motor-claims/leads
+/commitlint.config.js @iar-motor-claims/leads
+/.husky/ @iar-motor-claims/leads
+/CLAUDE.md @iar-motor-claims/leads
+/NAMING.md @iar-motor-claims/leads
+
+# ------------------------------------------------------------------------------
+# Services — owned by developers (service code)
+# ------------------------------------------------------------------------------
+/services/ @iar-motor-claims/developer
