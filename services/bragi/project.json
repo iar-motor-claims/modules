@@ -32,6 +32,10 @@
     "typecheck": {
       "command": "astro check",
       "options": { "cwd": "services/bragi" }
+    },
+    "e2e": {
+      "command": "playwright test",
+      "options": { "cwd": "services/bragi" }
     }
   }
 }
