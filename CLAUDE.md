@@ -10,12 +10,16 @@
 - **Documentation** — Built-in marketing site (Astro)
 
 **Technology Stack:**
-- **Node.js:** 22.15.3 or higher
-- **pnpm:** 10.32.1 or higher (workspaces)
-- **mise.toml:** Development tasks (optional but recommended)
+- **mise:** PRIMARY tooling — manages tool versions, env, and ALL workflows
+- **Node.js:** 22.15.3 (installed/pinned by mise)
+- **pnpm:** 10.32.1 (installed/pinned by mise, workspaces)
 - **CI/CD:** monorepo_nx_pipeline (Jenkins integration)
 
-**Important:** This repository is **language-agnostic**. These rules are for developers contributing to Modules. Use any editor, any AI tool, or manual development — everything should just work.
+**mise is the entry point for everything.** Don't call `pnpm`/`nx` directly —
+run `mise run <task>`. The tasks pin versions, set env vars, and keep every
+contributor (and CI) on the same path. Run `mise run info` to discover tasks.
+
+**Important:** This repository is **language-agnostic**. These rules are for developers contributing to Modules. Use any editor, any AI tool, or manual development — everything should just work via mise.
 
 ## Repository Structure
 
@@ -44,33 +48,37 @@ This repository works with:
 
 ### Before Starting Work
 
-1. **Understand:** Are you building a module, shared package, or documentation?
-2. **Module structure:** Follow `modules/<module-name>/` pattern
-3. **Shared code:** Goes in `packages/types/`, `packages/utils/`, or `packages/api-client/`
-4. **Documentation:** Astro pages in `docs/pages/`
-5. **Run commands:** Use `pnpm` directly or `mise run` tasks (both work)
+1. **Install mise** (if not already): https://mise.jdx.dev/getting-started.html
+2. **Run `mise install`** — gets the pinned Node + pnpm
+3. **Run `mise run setup`** — installs dependencies
+4. **Run `mise run info`** — see every available task
+5. **Understand:** Are you building a module, shared package, or documentation?
+   - Module → `modules/<module-name>/` (scaffold with `mise run new-module <name>`)
+   - Shared code → `packages/types/`, `packages/utils/`, `packages/api-client/`
+   - Docs → Astro pages in `docs/pages/`
+6. **Always use `mise run <task>`** — not raw `pnpm`/`nx`
 
 ## Adding a New Module
 
-1. Create folder: `modules/new-module/`
-2. Create `package.json` with module name
-3. Add `src/`, `__tests__/`, README.md
-4. Add to pnpm-workspace (auto-discovered)
-5. Add infra configs: `infra/services/new-module/{dev,prod}/`
-6. Update monorepo_nx_pipeline catalog
+**Use the mise task — it scaffolds everything for you:**
 
-Example module structure:
+```bash
+mise run new-module <name>
+```
 
-```
-modules/new-module/
-├── package.json         # name: @modules/new-module
-├── src/
-│   └── index.ts
-├── __tests__/
-│   └── module.test.ts
-├── README.md
-└── tsconfig.json
-```
+This creates:
+- `modules/<name>/package.json` (name: `@modules/<name>`)
+- `modules/<name>/src/index.ts`
+- `modules/<name>/__tests__/`
+- `modules/<name>/README.md` (module-specific docs — ALWAYS fill this in)
+- `modules/<name>/tsconfig.json`
+- `infra/services/modules-<name>/{development,production}/envs.conf`
+
+After scaffolding:
+1. Fill in the module README (overview, API, usage)
+2. `mise run setup` (link the new workspace)
+3. `mise run dev <name>` to develop
+4. Register `modules-<name>` in the monorepo_nx_pipeline catalog
 
 ## Adding a Shared Package
 
@@ -101,31 +109,27 @@ import '../styles/global.css';
 </html>
 ```
 
-## Common Commands
-
-**Using mise** (recommended):
+## Common Commands (all via mise)
 
 ```bash
-mise run dev          # Start dev server (docs site)
-mise run build        # Build all modules + docs
-mise run lint         # Lint all code
-mise run typecheck    # Type check all
-mise run test         # Run all tests
-mise run test:e2e     # E2E tests
+mise run info               # list all tasks
+mise run dev                # start docs site
+mise run dev <module>       # develop a specific module
+mise run build              # build everything
+mise run build <module>     # build one module
+mise run test               # all tests
+mise run test <module>      # one module's tests
+mise run lint               # lint everything
+mise run typecheck          # type-check everything
+mise run format             # format code
+mise run clean              # clear build output + caches
+mise run new-module <name>  # scaffold a new module
+mise run list-modules       # list modules + packages
+mise run docker-build       # build docs Docker image
 ```
 
-**Using pnpm:**
-
-```bash
-pnpm dev              # Start docs dev server
-pnpm build            # Build all
-pnpm lint             # Lint
-pnpm typecheck        # Type check
-pnpm test             # Tests
-
-# Build specific module
-pnpm --filter @modules/ai build
-```
+The tasks internally delegate to `nx`/`pnpm`, but contributors should always go
+through `mise run` so versions and env stay consistent.
 
 ## Styling with Tailwind
 

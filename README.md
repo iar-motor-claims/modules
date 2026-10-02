@@ -16,40 +16,52 @@ Each module is independently deployable, versioned, and can be sold/licensed sep
 
 ## Quick Start
 
+**mise is the primary tooling for this repository.** It manages tool versions,
+environment variables, and every workflow. You rarely call `pnpm`/`nx` directly —
+you run `mise run <task>`.
+
 ### Prerequisites
 
-- **Node.js:** 22.15.3 or higher
-- **pnpm:** 10.32.1 or higher
-- **mise:** Optional but recommended for task automation
+- **mise** — install from https://mise.jdx.dev/getting-started.html
+
+That's it. mise installs the correct Node.js (22.15.3) and pnpm (10.32.1)
+versions automatically — you don't install them separately.
 
 ### Installation
 
 ```bash
 cd modules
-pnpm install
+mise install          # installs pinned Node + pnpm (from .mise.toml [tools])
+mise run setup        # installs all dependencies
 ```
 
 ### Development
 
-Using **mise** (recommended):
+Everything runs through `mise run`:
 
 ```bash
-mise run dev          # Start development server
-mise run build        # Build all modules
-mise run lint         # Lint all code
-mise run typecheck    # Type check
-mise run test         # Run all tests
+mise run info               # see all available tasks
+mise run dev                # start docs site
+mise run dev <module>       # develop a specific module
+mise run build              # build all modules + docs
+mise run build <module>     # build one module
+mise run test               # run all tests
+mise run test <module>      # test one module
+mise run lint               # lint all code
+mise run typecheck          # type-check all code
+mise run format             # format code
+mise run clean              # remove build output + caches
 ```
 
-Or using **pnpm**:
+### Working with Modules
 
 ```bash
-pnpm dev              # Start dev server
-pnpm build            # Build
-pnpm lint             # Lint
-pnpm typecheck        # Type check
-pnpm test             # Tests
+mise run new-module <name>  # scaffold a new product module
+mise run list-modules       # list all modules + packages
 ```
+
+> Prefer `mise run <task>` over calling `pnpm`/`nx` directly — the tasks pin
+> versions, set env vars, and keep every contributor on the same path.
 
 ## Project Structure
 

@@ -1,42 +1,324 @@
-[env]
-NODE_ENV = { if = "false", value = "development" }
+# mise configuration for Modules platform
+# mise is the PRIMARY tooling for this repository.
+# Install mise: https://mise.jdx.dev/getting-started.html
+#
+# Everything is driven through `mise run <task>`. Run `mise run info` to see
+# all available tasks. mise manages tool versions, env vars, and all workflows.
 
 [tools]
 node = "22.15.3"
 pnpm = "10.32.1"
+# add as modules require them:
+# python = "3.12"
+# uv = "0.9.1"
+# go = "1.25.7"
+"npm:nx" = "22.0.2"
+
+[env]
+# Repo-wide env
+LOGS_DIR = "{{config_root}}/logs/"
+ASTRO_TELEMETRY_DISABLED = "true"
+
+# node_modules/.bin on PATH so local CLIs (astro, nx, etc.) resolve
+_.path = ["{{config_root}}/node_modules/.bin"]
+
+# Documentation site port
+PORT_DOCS = "4321"
+
+# Module ports (assigned as modules are built)
+PORT_MODULE_AI = "5001"
+PORT_MODULE_CLAIMS = "5002"
+PORT_MODULE_DOCUMENT_PROCESSING = "5003"
+PORT_MODULE_AGENTIC_AI = "5004"
+
+# ============================================================================
+
+[tasks.info]
+description = "Show available tasks"
+run = '''
+BOLD="\033[1m"
+RESET="\033[0m"
+CYAN="\033[36m"
+GREEN="\033[32m"
+YELLOW="\033[33m"
+BLUE="\033[34m"
+DIM="\033[2m"
+
+printf "\n"
+printf "${CYAN}${BOLD}── SETUP ───────────────────────────────────────────${RESET}\n"
+printf "  ${GREEN}setup${RESET}               ${DIM}install all dependencies${RESET}\n"
+printf "\n"
+printf "${YELLOW}${BOLD}── DAILY ───────────────────────────────────────────${RESET}\n"
+printf "  ${GREEN}dev${RESET}                 ${DIM}start docs site (or: mise run dev <module>)${RESET}\n"
+printf "  ${GREEN}build${RESET}               ${DIM}build all modules + docs${RESET}\n"
+printf "  ${GREEN}test${RESET}                ${DIM}run all tests${RESET}\n"
+printf "  ${GREEN}lint${RESET}                ${DIM}lint all code${RESET}\n"
+printf "  ${GREEN}typecheck${RESET}           ${DIM}type-check all code${RESET}\n"
+printf "  ${GREEN}format${RESET}              ${DIM}format code${RESET}\n"
+printf "  ${GREEN}clean${RESET}               ${DIM}remove build output + caches${RESET}\n"
+printf "\n"
+printf "${BLUE}${BOLD}── MODULES ─────────────────────────────────────────${RESET}\n"
+printf "  ${GREEN}new-module <name>${RESET}   ${DIM}scaffold a new product module${RESET}\n"
+printf "  ${GREEN}list-modules${RESET}        ${DIM}list all modules + packages${RESET}\n"
+printf "\n"
+printf "${BLUE}${BOLD}── DOCKER ──────────────────────────────────────────${RESET}\n"
+printf "  ${GREEN}docker-build${RESET}        ${DIM}build docs Docker image${RESET}\n"
+printf "  ${GREEN}docker-run${RESET}          ${DIM}run docs Docker image${RESET}\n"
+printf "\n"
+printf "${DIM}Run a task:  ${RESET}${YELLOW}mise run <task>${RESET}\n\n"
+'''
+dir = "{{config_root}}"
+
+# ============================================================================
+# SETUP
+# ============================================================================
+
+[tasks.setup]
+description = "Install all dependencies"
+run = '''
+    set -e
+    BOLD="\033[1m"; RESET="\033[0m"; GREEN="\033[32m"; CYAN="\033[36m"; YELLOW="\033[33m"; DIM="\033[2m"
+    TICK="${GREEN}✓${RESET}"; ARROW="${CYAN}→${RESET}"
+
+    printf "\n${BOLD}Setting up Modules Platform...${RESET}\n\n"
+
+    printf "${ARROW} ${CYAN}[1/1]${RESET} Installing Node dependencies\n"
+    pnpm install --frozen-lockfile 2>&1 | tail -3 || pnpm install 2>&1 | tail -3
+    printf "  ${TICK} Node dependencies ready\n\n"
+
+    printf "${GREEN}${BOLD}✓ Setup complete!${RESET}\n\n"
+    printf "${DIM}Next steps:${RESET}\n"
+    printf "  ${YELLOW}mise run dev${RESET}              ${DIM}start docs site${RESET}\n"
+    printf "  ${YELLOW}mise run info${RESET}             ${DIM}see all tasks${RESET}\n\n"
+'''
+dir = "{{config_root}}"
+
+# ============================================================================
+# DAILY WORKFLOWS
+# ============================================================================
 
 [tasks.dev]
-description = "Start development server"
-run = "pnpm dev"
+description = "Start dev server (usage: mise run dev [module])"
+run = '''
+#!/bin/bash
+set -e
+if [ -n "$1" ]; then
+    echo "Starting module: $1"
+    pnpm --filter "@modules/$1" dev
+else
+    echo "Starting documentation site on port ${PORT_DOCS}..."
+    pnpm --filter "@modules/docs" dev
+fi
+'''
+dir = "{{config_root}}"
 
 [tasks.build]
-description = "Build for production"
-run = "pnpm build"
-
-[tasks.preview]
-description = "Preview production build locally"
-run = "pnpm preview"
-
-[tasks.lint]
-description = "Lint code"
-run = "pnpm lint"
-
-[tasks.typecheck]
-description = "Type check"
-run = "pnpm typecheck"
+description = "Build all modules + docs (usage: mise run build [module])"
+run = '''
+#!/bin/bash
+set -e
+if [ -n "$1" ]; then
+    echo "Building module: $1"
+    pnpm --filter "@modules/$1" build
+else
+    echo "Building all modules + docs..."
+    nx run-many --target=build --all
+fi
+'''
+dir = "{{config_root}}"
 
 [tasks.test]
-description = "Run tests"
-run = "pnpm test"
+description = "Run all tests (usage: mise run test [module])"
+run = '''
+#!/bin/bash
+set -e
+if [ -n "$1" ]; then
+    pnpm --filter "@modules/$1" test
+else
+    nx run-many --target=test --all
+fi
+'''
+dir = "{{config_root}}"
 
-[tasks.test:e2e]
-description = "Run E2E tests"
-run = "pnpm test:e2e"
+[tasks.lint]
+description = "Lint all code (usage: mise run lint [module])"
+run = '''
+#!/bin/bash
+set -e
+if [ -n "$1" ]; then
+    pnpm --filter "@modules/$1" lint
+else
+    nx run-many --target=lint --all
+fi
+'''
+dir = "{{config_root}}"
 
-[tasks.docker:build]
-description = "Build Docker image"
-run = "docker build -t modules-website:latest ."
+[tasks.typecheck]
+description = "Type-check all code (usage: mise run typecheck [module])"
+run = '''
+#!/bin/bash
+set -e
+if [ -n "$1" ]; then
+    pnpm --filter "@modules/$1" typecheck
+else
+    nx run-many --target=typecheck --all
+fi
+'''
+dir = "{{config_root}}"
 
-[tasks.docker:run]
-description = "Run Docker image"
-run = "docker run -p 80:3000 modules-website:latest"
+[tasks.format]
+description = "Format code with Prettier"
+run = "pnpm prettier --write ."
+dir = "{{config_root}}"
+
+[tasks.clean]
+description = "Remove build output + caches"
+run = '''
+    rm -rf dist build .astro .nx node_modules/.cache
+    find . -name "dist" -type d -prune -exec rm -rf {} + 2>/dev/null || true
+    echo "✓ cleaned"
+'''
+dir = "{{config_root}}"
+
+# ============================================================================
+# MODULE MANAGEMENT
+# ============================================================================
+
+[tasks.new-module]
+description = "Scaffold a new product module (usage: mise run new-module <name>)"
+run = '''
+#!/bin/bash
+set -e
+NAME="$1"
+if [ -z "$NAME" ]; then
+    echo "Usage: mise run new-module <name>"
+    exit 1
+fi
+
+DIR="modules/$NAME"
+if [ -d "$DIR" ]; then
+    echo "Module '$NAME' already exists at $DIR"
+    exit 1
+fi
+
+mkdir -p "$DIR/src" "$DIR/__tests__"
+mkdir -p "infra/services/modules-$NAME/development" "infra/services/modules-$NAME/production"
+
+cat > "$DIR/package.json" <<EOF
+{
+  "name": "@modules/$NAME",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint src --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "eslint": "^9.38.0",
+    "typescript": "^5.9.2",
+    "vitest": "^2.1.8"
+  }
+}
+EOF
+
+cat > "$DIR/tsconfig.json" <<EOF
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["src"]
+}
+EOF
+
+echo "export const name = '$NAME';" > "$DIR/src/index.ts"
+
+cat > "$DIR/README.md" <<EOF
+# @modules/$NAME
+
+> One-line description of the $NAME module.
+
+## Overview
+
+Describe what this module does and why someone would buy/use it.
+
+## Installation
+
+\`\`\`bash
+pnpm add @modules/$NAME
+\`\`\`
+
+## Usage
+
+\`\`\`ts
+import { name } from '@modules/$NAME';
+\`\`\`
+
+## API Reference
+
+Document the public API here.
+
+## Development
+
+\`\`\`bash
+mise run dev $NAME        # develop this module
+mise run test $NAME       # test this module
+mise run build $NAME      # build this module
+\`\`\`
+
+## Deployment
+
+Deployed via monorepo_nx_pipeline as service \`modules-$NAME\`.
+Env config: \`infra/services/modules-$NAME/{development,production}/envs.conf\`
+EOF
+
+cat > "infra/services/modules-$NAME/development/envs.conf" <<EOF
+ENVIRONMENT=development
+NODE_ENV=production
+EOF
+
+cat > "infra/services/modules-$NAME/production/envs.conf" <<EOF
+ENVIRONMENT=production
+NODE_ENV=production
+EOF
+
+echo "✓ Module '@modules/$NAME' scaffolded at $DIR"
+echo "  - package.json, tsconfig.json, src/index.ts, README.md"
+echo "  - infra/services/modules-$NAME/{development,production}/envs.conf"
+echo ""
+echo "Next: mise run setup && mise run dev $NAME"
+'''
+dir = "{{config_root}}"
+
+[tasks.list-modules]
+description = "List all modules + shared packages"
+run = '''
+    BOLD="\033[1m"; RESET="\033[0m"; CYAN="\033[36m"; GREEN="\033[32m"; DIM="\033[2m"
+    printf "\n${CYAN}${BOLD}Product Modules (modules/):${RESET}\n"
+    for d in modules/*/; do [ -d "$d" ] && printf "  ${GREEN}%s${RESET}\n" "$(basename "$d")"; done
+    printf "\n${CYAN}${BOLD}Shared Packages (packages/):${RESET}\n"
+    for d in packages/*/; do [ -d "$d" ] && printf "  ${GREEN}%s${RESET}\n" "$(basename "$d")"; done
+    printf "\n"
+'''
+dir = "{{config_root}}"
+
+# ============================================================================
+# DOCKER
+# ============================================================================
+
+[tasks.docker-build]
+description = "Build docs Docker image"
+run = "docker build -t modules-docs:latest ."
+dir = "{{config_root}}"
+
+[tasks.docker-run]
+description = "Run docs Docker image"
+run = "docker run -p 80:80 modules-docs:latest"
+dir = "{{config_root}}"
