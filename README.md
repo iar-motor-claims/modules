@@ -37,6 +37,6 @@ mise run info         # list all tasks
 | [docs/architecture.md](./docs/architecture.md) | Monorepo layout, how services fit together |
 | [docs/guardrails.md](./docs/guardrails.md) | CI/CD, CODEOWNERS, hooks, pipeline, approval gates |
 | [docs/add-a-service.md](./docs/add-a-service.md) | Step-by-step to add a new service |
-| [CLAUDE.md](./CLAUDE.md) | Rules for developers & AI agents |
+| [AGENTS.md](./AGENTS.md) | Rules for AI agents & developers (provider-agnostic) |
 
 Each service also has its own README (and docs) under `services/<name>/`.

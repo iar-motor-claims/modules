@@ -1,6 +1,6 @@
 # Conventions
 
-The non-negotiable rules for working in this repo. Also see [CLAUDE.md](../CLAUDE.md).
+The non-negotiable rules for working in this repo. Also see [AGENTS.md](../AGENTS.md).
 
 ## mise-first
 
@@ -48,7 +48,24 @@ Catalogs: `default`, `astro`, `react19`.
 Brand assets live once in the repo-root `assets/` directory and are referenced by
 services. Don't duplicate assets into a service.
 
-## Editor / AI agnostic
+## Agentic-AI-first, provider-agnostic
 
-The repo works with any editor or AI tool. Everything is driven through mise, so
-there is no tool-specific setup required to build, test, or run a service.
+This repo is built to be driven by autonomous coding agents, independent of model
+vendor. Everything runs through mise, so there is no tool-specific setup required to
+build, test, or run a service — any agent discovers capabilities via `mise run info`.
+
+**Agent instructions have one home: [`AGENTS.md`](../AGENTS.md)** (the cross-tool
+standard read by OpenAI Codex, Cursor, Copilot, Gemini, and others). Every
+vendor-specific entrypoint is a **symlink** to it, so there is exactly one file to
+maintain:
+
+| File | Tool | Kind |
+|------|------|------|
+| `AGENTS.md` | Codex + any `AGENTS.md`-aware agent | source of truth |
+| `CLAUDE.md` | Claude Code | → symlink to `AGENTS.md` |
+| `GEMINI.md` | Gemini CLI | → symlink to `AGENTS.md` |
+| `.cursor/rules/agents.mdc` | Cursor | → symlink to `AGENTS.md` |
+| `.github/copilot-instructions.md` | GitHub Copilot | → symlink to `AGENTS.md` |
+
+**Rules:** edit only `AGENTS.md`; never add vendor-/model-specific guidance to shared
+files; to onboard a new tool, add a symlink to `AGENTS.md`, not a new copy.

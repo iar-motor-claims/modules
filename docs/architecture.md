@@ -15,7 +15,7 @@ modules/
 ├── .mise.toml           # primary task runner / tool versions
 ├── nx.json              # Nx task orchestration
 ├── pnpm-workspace.yaml  # workspaces + version catalogs
-└── CLAUDE.md            # rules for developers & AI agents
+└── AGENTS.md            # canonical agent/contributor rules (vendor files symlink here)
 ```
 
 ## How services fit together
