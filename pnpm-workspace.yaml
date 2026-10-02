@@ -1,0 +1,40 @@
+packages:
+  - "services/*"
+  - "packages/*"
+  - "tools/*"
+
+catalogs:
+  # ============================================================================
+  # Default Catalog - Shared across all packages (accessed via catalog:)
+  # ============================================================================
+  default:
+    # Workspace tooling
+    typescript: 5.9.2
+    prettier: ^3.6.2
+    eslint: ^9.38.0
+    "@types/node": ^22.15.3
+
+    # Build tools
+    vite: ^6.0.5
+    vitest: ^2.1.8
+    tailwindcss: ^4.1.16
+    "@tailwindcss/vite": ^4.1.16
+
+    # E2E Testing
+    "@playwright/test": ^1.57.0
+
+  # ============================================================================
+  # Astro Catalog (accessed via catalog:astro)
+  # ============================================================================
+  astro:
+    astro: ^6.0.8
+    "@astrojs/react": ^5.0.1
+
+  # ============================================================================
+  # React 19 Catalog (accessed via catalog:react19)
+  # ============================================================================
+  react19:
+    react: 19.2.0
+    react-dom: 19.2.0
+    "@types/react": 19.2.9
+    "@types/react-dom": 19.1.1

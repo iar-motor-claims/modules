@@ -1,0 +1,37 @@
+{
+  "name": "bragi",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "services/bragi/src",
+  "projectType": "application",
+  "tags": [
+    "type:app",
+    "scope:services",
+    "lang:typescript",
+    "framework:astro",
+    "org:iar",
+    "stage:engineering"
+  ],
+  "targets": {
+    "dev": {
+      "command": "astro dev",
+      "options": { "cwd": "services/bragi" }
+    },
+    "build": {
+      "command": "astro build",
+      "options": { "cwd": "services/bragi" },
+      "outputs": ["{projectRoot}/dist"]
+    },
+    "preview": {
+      "command": "astro preview",
+      "options": { "cwd": "services/bragi" }
+    },
+    "lint": {
+      "command": "eslint src --ext .ts,.tsx,.astro",
+      "options": { "cwd": "services/bragi" }
+    },
+    "typecheck": {
+      "command": "astro check",
+      "options": { "cwd": "services/bragi" }
+    }
+  }
+}

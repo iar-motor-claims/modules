@@ -1,7 +1,0 @@
-{
-  "extends": "astro/configs/strict",
-  "compilerOptions": {
-    "jsxImportSource": "react",
-    "strictNullChecks": true
-  }
-}
