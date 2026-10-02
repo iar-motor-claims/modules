@@ -1,6 +1,6 @@
-# Modules Platform
+# Modules Platform — Marketing Website
 
-A modular product platform built with modern tooling and monorepo architecture. This platform enables selling everything as composable, independent modules.
+Marketing website for Modules, a modular product platform. Built with **Astro**, integrated into **monorepo_nx_pipeline**.
 
 ## Quick Start
 
@@ -8,7 +8,6 @@ A modular product platform built with modern tooling and monorepo architecture. 
 
 - **Node.js:** 22.15.3 or higher
 - **pnpm:** 10.32.1 or higher
-- **TypeScript:** 5.9.2
 
 ### Installation
 
@@ -17,133 +16,118 @@ cd modules
 pnpm install
 ```
 
-### Available Commands
+### Development
 
 ```bash
-# Development
-pnpm build              # Build all packages
-pnpm lint              # Lint all packages
-pnpm typecheck         # Type check all packages
-pnpm test              # Run tests for all packages
-pnpm test:watch        # Run tests in watch mode
+# Start development server (localhost:3000)
+pnpm dev
 
-# Utilities
-pnpm nx                # Run any Nx command
-pnpm clean             # Clean Nx cache
-pnpm format            # Format code with Prettier
+# Build for production
+pnpm build
+
+# Preview production build
+pnpm preview
+
+# Lint code
+pnpm lint
+
+# Type check
+pnpm typecheck
+
+# Run tests
+pnpm test
+
+# E2E tests
+pnpm test:e2e
 ```
 
 ## Project Structure
 
 ```
 modules/
-├── packages/          # Shared libraries (@modules/*)
-│                      # - Reusable utilities, components, domain logic
-├── services/          # Standalone services
-│                      # - Microservices, APIs, frontends, workers
-├── tools/             # Development tools & utilities
-│                      # - CLI tools, code generators, build helpers
-├── .github/           # GitHub configuration
-│   └── workflows/     # CI/CD pipelines
-└── .claude/           # Claude Code configuration
+├── src/
+│   ├── pages/              # Astro pages (URL routes)
+│   ├── components/         # React components
+│   ├── layouts/            # Page layouts
+│   └── styles/             # Global CSS
+├── public/                 # Static assets
+├── tests/                  # E2E tests (Playwright)
+├── Dockerfile              # Docker image for deployment
+├── astro.config.mjs        # Astro configuration
+├── package.json            # Dependencies and scripts
+└── tsconfig.json           # TypeScript configuration
+```
+
+## CI/CD Integration
+
+**Pipeline:** `monorepo_nx_pipeline` (shared with other services)  
+**Service Name:** `modules-website`  
+**Kind:** `frontend`  
+**Language:** `node`  
+
+### Deployment
+
+1. **Build:** `pnpm build` → static site in `/dist`
+2. **Docker:** Multi-stage build → Nginx image
+3. **Deploy:** Kubernetes via Helm OR Cloudflare Pages
+
+### Environment Configuration
+
+```bash
+infra/services/modules-website/
+├── development/
+│   └── envs.conf         # Development env vars
+└── production/
+    └── envs.conf         # Production env vars
 ```
 
 ## Architecture
 
-### Packages (`/packages`)
+- **Framework:** Astro 6.0 (static site generator)
+- **Styling:** Tailwind CSS 4
+- **Runtime:** React 19 (islands)
+- **Deployment:** Docker + Nginx
+- **Hosting:** Kubernetes (GKE) or Cloudflare Pages
 
-Shared libraries published as `@modules/*` modules. Use for:
-- UI component libraries
-- Utility & helper functions
-- Shared domain logic
-- Configuration & constants
-- Type definitions
+## Features
 
-### Services (`/services`)
-
-Standalone applications and microservices. Examples:
-- REST/GraphQL APIs
-- React/Next.js frontends
-- Python/Node.js workers
-- Real-time services
-
-### Tools (`/tools`)
-
-Internal tooling and CLIs for development. Examples:
-- Code generators
-- Build scripts
-- Migration utilities
-- CLI tools
-
-## Development Workflow
-
-### Creating a New Package
-
-```bash
-mkdir -p packages/my-package
-cd packages/my-package
-# Add package.json with @modules/my-package name
-```
-
-### Creating a New Service
-
-```bash
-mkdir -p services/my-service
-cd services/my-service
-# Add package.json for the service
-```
-
-### Running Nx Commands
-
-```bash
-# Build a specific project
-pnpm nx build my-package
-
-# Run tests with coverage
-pnpm nx test my-package --coverage
-
-# Format changed files
-pnpm nx format:write --files="packages/my-package/**/*"
-
-# View dependency graph
-pnpm nx graph
-```
-
-## Package Management
-
-- **pnpm workspaces:** All packages live in `packages/` and `services/`
-- **Version catalogs:** Defined in `pnpm-workspace.yaml`
-- **Nx:** Task orchestration and caching for monorepo efficiency
-
-## Configuration Files
-
-| File | Purpose |
-|------|---------|
-| `pnpm-workspace.yaml` | pnpm workspaces & version catalogs |
-| `nx.json` | Nx configuration & task defaults |
-| `tsconfig.json` | TypeScript root configuration |
-| `.eslintrc.json` | ESLint rules for all packages |
-| `.npmrc` | npm/pnpm registry & behavior settings |
+✅ Fast static site generation  
+✅ React components for interactivity  
+✅ Tailwind CSS for styling  
+✅ TypeScript for type safety  
+✅ E2E tests with Playwright  
+✅ Production-optimized Nginx config  
+✅ Health checks built-in  
 
 ## Best Practices
 
-1. **Module naming:** Use `@modules/module-name` for all packages
-2. **Version consistency:** Use version catalogs; never hardcode versions
-3. **Shared code:** Put reusable code in `packages/`, not duplicated services
-4. **Type safety:** Enable strict mode in all TypeScript projects
-5. **Testing:** Write unit tests; run `pnpm test` before committing
-6. **Linting:** All code must pass `pnpm lint`
+1. **Pages:** Create Astro files in `src/pages/` for new routes
+2. **Components:** React components in `src/components/`
+3. **Styling:** Use Tailwind CSS classes or `src/styles/global.css`
+4. **Assets:** Reference shared assets from root `assets/` directory
+5. **Testing:** Add E2E tests in `tests/` for critical flows
 
-## Next Steps
+## Docker Build & Run
 
-- [ ] Add CI/CD workflows in `.github/workflows/`
-- [ ] Create first shared package in `packages/`
-- [ ] Set up service templates in `services/`
-- [ ] Configure branch protection rules
-- [ ] Set up deployment infrastructure
+```bash
+# Build image
+docker build -t modules-website:latest .
+
+# Run container
+docker run -p 80:8080 modules-website:latest
+
+# Access at http://localhost
+```
 
 ## Resources
 
-- [Nx Documentation](https://nx.dev)
-- [pnpm Workspaces](https://pnpm.io/workspaces)
-- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
+- [Astro Documentation](https://docs.astro.build)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [React Documentation](https://react.dev)
+- [Playwright Documentation](https://playwright.dev)
+
+## Related
+
+- **GitHub:** https://github.com/iar-motor-claims/modules
+- **Jenkins:** https://jenkins.iarservices.in → modules-website service
+- **Portal:** https://modules.iarservices.in

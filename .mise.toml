@@ -1,0 +1,42 @@
+[env]
+NODE_ENV = { if = "false", value = "development" }
+
+[tools]
+node = "22.15.3"
+pnpm = "10.32.1"
+
+[tasks.dev]
+description = "Start development server"
+run = "pnpm dev"
+
+[tasks.build]
+description = "Build for production"
+run = "pnpm build"
+
+[tasks.preview]
+description = "Preview production build locally"
+run = "pnpm preview"
+
+[tasks.lint]
+description = "Lint code"
+run = "pnpm lint"
+
+[tasks.typecheck]
+description = "Type check"
+run = "pnpm typecheck"
+
+[tasks.test]
+description = "Run tests"
+run = "pnpm test"
+
+[tasks.test:e2e]
+description = "Run E2E tests"
+run = "pnpm test:e2e"
+
+[tasks.docker:build]
+description = "Build Docker image"
+run = "docker build -t modules-website:latest ."
+
+[tasks.docker:run]
+description = "Run Docker image"
+run = "docker run -p 80:3000 modules-website:latest"

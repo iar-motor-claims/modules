@@ -1,164 +1,191 @@
-# Modules Platform — Agent Working Rules
+# Modules Platform — Marketing Website Agent Rules
 
-## Monorepo Overview
+## Repository Overview
 
-**Modules** is a standalone monorepo (separate from `claims/`) for a modular product platform sold as composable modules.
+**Modules** is a marketing website for the Modules product platform.
 
-- **Monorepo tool:** Nx + pnpm workspaces
-- **Language:** Primarily TypeScript/JavaScript
+- **Framework:** Astro 6.0
+- **Styling:** Tailwind CSS 4
+- **Components:** React 19
 - **Node.js:** 22.15.3+
 - **pnpm:** 10.32.1+
+- **CI/CD:** monorepo_nx_pipeline integration
+
+## Service Configuration
+
+**Pipeline:** monorepo_nx_pipeline  
+**Service Name:** `modules-website`  
+**Kind:** `frontend`  
+**Language:** `node`  
 
 ## Project Structure
 
 ```
 modules/
-├── packages/       # Shared libraries (@modules/*)
-├── services/       # Standalone services (APIs, frontends, workers)
-├── tools/          # Development tooling & CLIs
-└── .claude/        # Claude Code configuration
+├── src/
+│   ├── pages/              # Astro pages (routes)
+│   ├── components/         # React components
+│   ├── layouts/            # Page layouts
+│   └── styles/             # Global CSS
+├── public/                 # Static assets
+├── tests/                  # E2E tests (Playwright)
+├── infra/services/modules-website/
+│   ├── development/envs.conf
+│   └── production/envs.conf
+└── docker files (Dockerfile, nginx.conf)
 ```
 
 ## Before Starting Work
 
-1. **Understand the task:** Is it a new package, service, or tooling work?
-2. **Follow conventions:** Use `@modules/` namespace for all packages
-3. **Use version catalogs:** Never hardcode versions — use `pnpm-workspace.yaml` catalogs
-4. **Type safety:** Strict TypeScript in all new code
+1. **Check:** Is this a page, component, or styling change?
+2. **Astro:** Use Astro file format for pages (`.astro`)
+3. **React:** Use `.tsx` for interactive components
+4. **Tailwind:** Use Tailwind classes for styling
+5. **Assets:** Use shared assets from root `assets/` directory
 
-## When Adding a New Package
+## Adding a New Page
 
-1. Create folder: `packages/package-name/`
-2. Create `package.json` with name `@modules/package-name`
-3. Add `tsconfig.json`, `.eslintrc.json`
-4. Add `src/index.ts` as entry point
-5. Run `pnpm install` from repo root
-6. Test: `pnpm nx test package-name`
+1. Create file: `src/pages/page-name.astro`
+2. Follow Astro layout structure
+3. Use React components as needed
+4. Style with Tailwind CSS
+5. Test with `pnpm dev`
 
-Example `package.json`:
+Example page:
 
-```json
-{
-  "name": "@modules/package-name",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "lint": "eslint src --ext .ts,.tsx",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest"
-  },
-  "devDependencies": {
-    "@types/node": "catalog:",
-    "typescript": "catalog:",
-    "vitest": "catalog:",
-    "eslint": "catalog:"
-  }
+```astro
+---
+import '../styles/global.css';
+---
+
+<html lang="en">
+  <head>
+    <title>Page Title</title>
+  </head>
+  <body>
+    <h1>Welcome</h1>
+  </body>
+</html>
+```
+
+## Adding a New Component
+
+1. Create file: `src/components/ComponentName.tsx`
+2. Export React component
+3. Import in Astro pages with `client:load` if interactive
+
+Example component:
+
+```tsx
+export interface Props {
+  title: string;
+}
+
+export default function MyComponent({ title }: Props) {
+  return <div className="text-2xl font-bold">{title}</div>;
 }
 ```
 
-## When Adding a New Service
-
-1. Create folder: `services/service-name/`
-2. Create `package.json` with name `service-name` (or `@modules/service-name` if published)
-3. Follow the same structure as `packages/` but include app-specific logic
-4. Register in `.github/workflows/` if it needs CI/CD
-
-## Nx Commands (Most Common)
+## Common Commands
 
 ```bash
-# Build specific project
-pnpm nx build @modules/package-name
+# Development
+pnpm dev              # Start dev server
 
-# Run tests
-pnpm nx test @modules/package-name
-pnpm nx test @modules/package-name --coverage
+# Building
+pnpm build            # Build for production
+pnpm preview          # Preview production build
 
-# Lint
-pnpm nx lint @modules/package-name
-
-# Type check
-pnpm nx typecheck @modules/package-name
-
-# View dependency graph
-pnpm nx graph
-pnpm nx graph --file=graph.html
-
-# Run all tasks for affected packages
-pnpm nx run-many --target=test --all
+# Quality
+pnpm lint             # ESLint
+pnpm typecheck        # TypeScript
+pnpm test             # Vitest
+pnpm test:e2e         # Playwright E2E tests
 ```
 
-## Linting & Formatting
+## Styling with Tailwind
 
-- **ESLint:** Configured in `.eslintrc.json` (root) + per-project
-- **Prettier:** Uses `.prettierrc.json` (100-char line width)
-- **TypeScript strict mode:** Enabled globally
+- **Classes:** Use Tailwind utility classes
+- **Global:** Add global CSS to `src/styles/global.css`
+- **Variables:** Define CSS variables in `:root`
+
+Never write custom CSS unless absolutely necessary.
+
+## Environment Configuration
+
+Environments are at: `infra/services/modules-website/{dev,prod}/envs.conf`
+
+Variables loaded by monorepo_nx_pipeline:
+
+```
+ENVIRONMENT=development|production
+NODE_ENV=production
+SITE_URL=https://modules.iarservices.in
+```
+
+## Deployment
+
+1. **Build:** `pnpm build` → `/dist` folder
+2. **Docker:** `docker build -t modules-website:latest .`
+3. **Deploy:** monorepo_nx_pipeline handles everything
+4. **Access:** https://modules.iarservices.in (prod)
+
+## Testing
+
+### Unit/Component Tests
 
 ```bash
-pnpm lint                # Check all packages
-pnpm format:check        # Check formatting
-pnpm format              # Auto-format all files
+pnpm test              # Vitest
 ```
 
-## Dependency Management
+### E2E Tests
 
-### Using Version Catalogs
-
-All versions are pinned in `pnpm-workspace.yaml` under `catalogs.default`:
-
-```json
-{
-  "dependencies": {
-    "typescript": "catalog:",
-    "prettier": "catalog:",
-    "zod": "catalog:"
-  }
-}
+```bash
+pnpm test:e2e          # Playwright
 ```
 
-**Never** hardcode versions. Always use `catalog:` in `package.json`.
+Write E2E tests for critical user flows.
 
-### Adding New Dependencies
+## Git Workflow
 
-1. Update `pnpm-workspace.yaml` catalogs
-2. Run `pnpm install`
-3. Commit both files together
+1. Create branch from main
+2. Make changes (pages, components, styles)
+3. Test locally: `pnpm dev`
+4. Commit with clear message
+5. Push and create PR
+6. monorepo_nx_pipeline CI runs tests
+7. Merge when green
 
-## GitHub Workflows
+## Docker & Kubernetes
 
-Workflows live in `.github/workflows/`. Common patterns:
+**Dockerfile:** Multi-stage build  
+- Stage 1: Build with Node + pnpm
+- Stage 2: Serve with Nginx + Alpine
 
-- **CI/CD:** Build, lint, test on PR
-- **Release:** Auto-publish packages
-- **Deploy:** Service deployment triggers
+**Health Check:** `/health` endpoint
+
+**Port:** 80 (HTTP)
 
 ## Never
 
-- Use `npm install` — always use `pnpm`
-- Hardcode versions in `package.json` — use catalogs
-- Mix CommonJS and ESM in the same codebase
-- Skip type checking — enable strict mode
-- Forget to register new packages in the monorepo
+- Hardcode environment variables
+- Add new npm packages without updating pnpm-lock.yaml
+- Skip type checking or linting
+- Deploy without running `pnpm build`
+- Commit node_modules or dist folder
 
-## Useful Files
+## Resources
 
-| File | Purpose |
-|------|---------|
-| `pnpm-workspace.yaml` | Workspaces + version catalogs |
-| `nx.json` | Nx configuration & task defaults |
-| `tsconfig.json` | Root TypeScript config |
-| `.eslintrc.json` | Linting rules |
-| `.prettierrc.json` | Code formatting rules |
+- **Astro:** https://docs.astro.build
+- **Tailwind:** https://tailwindcss.com/docs
+- **React:** https://react.dev
+- **Playwright:** https://playwright.dev
+- **monorepo_nx_pipeline:** infra/jenkins/lib/vars/monorepo_nx_pipeline.groovy
 
-## Task Tracking
+## Support
 
-Work in this monorepo should be tracked in Linear under the **Modules** team (or similar — confirm with your product manager). Reference tickets in commits using standard format: `MODULE-123`.
-
-## Getting Help
-
-- **Nx docs:** https://nx.dev
-- **pnpm docs:** https://pnpm.io
-- **TypeScript docs:** https://www.typescriptlang.org/docs/
+For issues:
+1. Check Astro documentation
+2. Check Tailwind documentation
+3. Review existing pages/components for patterns
+4. Run `pnpm dev` and debug in browser DevTools

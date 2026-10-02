@@ -1,35 +1,36 @@
 {
-  "name": "modules",
+  "name": "@iar-motor-claims/modules-website",
   "version": "1.0.0",
-  "description": "Modular product platform - selling everything as modules",
+  "description": "Marketing website for Modules - modular product platform",
   "private": true,
   "packageManager": "pnpm@10.32.1",
-  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "nx": "nx",
-    "build": "nx run-many --target=build --all",
-    "lint": "nx run-many --target=lint --all",
-    "typecheck": "nx run-many --target=typecheck --all",
-    "test": "nx run-many --target=test --all",
-    "test:watch": "nx run-many --target=test:watch --all --skip-nx-cache",
-    "clean": "nx reset",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "lint": "eslint src --ext .ts,.tsx,.astro",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@astrojs/react": "^5.0.1",
+    "astro": "^6.0.8",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
   },
   "devDependencies": {
-    "@nx/eslint": "^19.8.0",
-    "@nx/eslint-plugin": "^19.8.0",
-    "@nx/js": "^19.8.0",
-    "@nx/linter": "^19.8.0",
-    "@nx/vite": "^19.8.0",
-    "@nx/webpack": "^19.8.0",
-    "@nx/workspace": "^19.8.0",
-    "nx": "^19.8.0",
-    "prettier": "^3.6.2",
-    "typescript": "5.9.2"
-  },
-  "engines": {
-    "node": ">=22.15.3",
-    "pnpm": ">=10.32.1"
+    "@playwright/test": "^1.58.2",
+    "@tailwindcss/vite": "^4.2.2",
+    "@types/node": "^20",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.38.0",
+    "tailwindcss": "^4",
+    "typescript": "^5.9.2",
+    "vitest": "^2.1.8"
   }
 }
