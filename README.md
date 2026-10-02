@@ -23,7 +23,7 @@ mise is the primary tooling — it installs the pinned Node + pnpm for you.
 
 ```bash
 # install mise: https://mise.jdx.dev/getting-started.html
-mise install          # pinned Node 22.15.3 + pnpm 10.32.1
+mise install          # pinned Node 24.21.0 + pnpm 12.8.2
 mise run setup        # install dependencies
 mise run dev bragi    # start the website
 mise run info         # list all tasks

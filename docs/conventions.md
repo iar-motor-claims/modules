@@ -5,7 +5,7 @@ The non-negotiable rules for working in this repo. Also see [CLAUDE.md](../CLAUD
 ## mise-first
 
 **mise is the primary tooling.** Always go through `mise run <task>` — not raw
-`pnpm`/`nx`. The tasks pin tool versions (Node 22.15.3, pnpm 10.32.1, nx) and set
+`pnpm`/`nx`. The tasks pin tool versions (Node 24.21.0, pnpm 12.8.2, nx) and set
 env so every contributor and CI stay aligned. Start with `mise run info`.
 
 ## Naming — Norse Mythology

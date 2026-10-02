@@ -12,7 +12,7 @@ catalogs:
     typescript: 5.9.2
     prettier: ^3.6.2
     eslint: ^9.38.0
-    "@types/node": ^22.15.3
+    "@types/node": ^24.0.0
 
     # Build tools
     vite: ^6.0.5
